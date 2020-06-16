@@ -1,0 +1,41 @@
+@mgmt_address = 10.1.1.241
+
+# Authentication
+# @name login
+POST https://{{mgmt_address}}/mgmt/shared/authn/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "admin",
+    "loginProviderName":"tmos"
+}
+
+###
+@authToken = {{login.response.body.$.token.token}}
+
+# extend token time
+PATCH https://{{mgmt_address}}/mgmt/shared/authz/tokens/{{authToken}} HTTP/1.1
+X-F5-Auth-Token: {{authToken}}
+Content-Type: application/json
+
+{
+    "timeout":"36000" //this is the maximum
+}
+
+###
+# AS3 installation check
+GET https://{{mgmt_address}}/mgmt/shared/appsvcs/info HTTP/1.1
+X-F5-Auth-Token: {{authToken}}
+Content-Type: application/json
+
+###
+# Create Application
+# @name AS3_definition
+POST  https://{{mgmt_address}}/mgmt/shared/appsvcs/declare HTTP/1.1
+X-F5-Auth-Token: {{authToken}}
+Content-Type: application/json
+
+< ./AS3_definition.json
+
+###

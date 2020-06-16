@@ -1,0 +1,47 @@
+{
+    "$schema": "https://raw.githubusercontent.com/F5Networks/f5-appsvcs-extension/master/schema/latest/as3-schema.json",
+    "class":"AS3",
+    "action": "deploy",
+    "logLevel": "info",
+    "persist": true,
+    "declaration": {
+        "class": "ADC",
+        "id": "ce59a883-7e36-44ff-82ac-1e718842as5c",
+        "label": "Protected application",
+        "schemaVersion": "3.19.0",
+        "tenant01": {
+            "class": "Tenant",
+            "App01" : {
+                "class": "Application",
+                "template": "http",
+                "serviceMain": {
+                    "class": "Service_HTTP",
+                    "virtualAddresses": [
+                        "10.1.10.20"
+                    ],
+                    "virtualPort": 80,
+                    "snat": "auto",
+                    "pool": "hackazon",
+                    "securityLogProfiles": [
+                        {"bigip": "/Common/Log all requests"}
+                    ],
+                    "policyWAF": {"bigip": "/Common/AppPolicy01"}
+                },
+                "hackazon" : {
+                    "class": "Pool",
+                    "monitors": [
+                        "http"
+                    ],
+                    "members": [
+                        {
+                            "servicePort": 80,
+                            "serverAddresses": [
+                                "10.1.20.20"
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

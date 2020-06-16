@@ -1,0 +1,4 @@
+# Request that should be blocked first
+GET http://10.1.10.20/info.dat HTTP/1.1
+
+###

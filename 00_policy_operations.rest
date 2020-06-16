@@ -1,0 +1,100 @@
+@mgmt_address = 10.1.1.241
+
+# Authentication
+# @name login
+POST https://{{mgmt_address}}/mgmt/shared/authn/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "admin",
+    "loginProviderName":"tmos"
+}
+
+###
+@authToken = {{login.response.body.$.token.token}}
+
+# extend token time
+PATCH https://{{mgmt_address}}/mgmt/shared/authz/tokens/{{authToken}} HTTP/1.1
+X-F5-Auth-Token: {{authToken}}
+Content-Type: application/json
+
+{
+    "timeout":"36000" //this is the maximum
+}
+
+###
+# Upload Policy
+# @name upload_file
+POST https://{{mgmt_address}}/mgmt/tm/asm/file-transfer/uploads/policy.json HTTP/1.1
+X-F5-Auth-Token: {{authToken}}
+Content-Range: 0-740/740
+
+< init_policy.json
+
+###
+# Create Policy
+# @name create_policy
+POST https://{{mgmt_address}}/mgmt/tm/asm/tasks/import-policy/ HTTP/1.1
+X-F5-Auth-Token: {{authToken}}
+
+{
+    "filename":"policy.json",
+    "policy": {
+        "fullPath": "/Common/AppPolicy01"
+        }
+}
+
+###
+@policy_id = {{create_policy.response.body.$.id}}
+
+# Get Policy ID
+# @name get_poplicy
+GET  https://{{mgmt_address}}/mgmt/tm/asm/policies?$filter=name+eq+AppPolicy01 HTTP/1.1
+X-F5-Auth-Token: {{authToken}}
+
+###
+@policy_id = {{get_poplicy.response.body.$.items[0].id}}
+
+###
+# Checking if policy created correctly
+GET https://{{mgmt_address}}/mgmt/tm/asm/tasks/import-policy/{{policy_id}} HTTP/1.1
+X-F5-Auth-Token: {{authToken}}
+
+###
+# Apply policy
+# @name apply_policy
+POST https://{{mgmt_address}}/mgmt/tm/asm/tasks/apply-policy/ HTTP/1.1 
+X-F5-Auth-Token: {{authToken}}
+
+{
+    "policy": {
+        "fullPath":"/Common/AppPolicy01"
+    }
+}
+
+
+###
+# Suggestions preview - do not copy to policy declaration
+GET https://{{mgmt_address}}/mgmt/tm/asm/policies/{{policy_id}}/suggestions?ver=15.1.0 HTTP/1.1
+X-F5-Auth-Token: {{authToken}}
+
+###
+# Get Suggestions
+# @name get_suggestions
+POST https://{{mgmt_address}}/mgmt/tm/asm/tasks/export-suggestions/ HTTP/1.1
+X-F5-Auth-Token: {{authToken}}
+
+{
+    "policyReference": {
+        "link": "https://localhost/mgmt/tm/asm/policies/{{policy_id}}"},
+        "inline": true,
+        "filter": "score gt '0'"
+}
+
+###
+@suggestions_id = {{get_suggestions.response.body.$.id}}
+
+###
+GET https://{{mgmt_address}}/mgmt/tm/asm/tasks/export-suggestions/{{suggestions_id}}?ver=15.1.0 HTTP/1.1
+X-F5-Auth-Token: {{authToken}}
