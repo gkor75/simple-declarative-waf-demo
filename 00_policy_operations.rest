@@ -101,13 +101,14 @@ GET https://{{mgmt_address}}/mgmt/tm/asm/tasks/export-suggestions/{{suggestions_
 X-F5-Auth-Token: {{authToken}}
 
 ###
-# apply new policy
+# Update policy
+# Update Content-Range (file length -1)
 ###
 # Upload Policy
 # @name upload_mod_file
 POST https://{{mgmt_address}}/mgmt/tm/asm/file-transfer/uploads/policymod.json HTTP/1.1
 X-F5-Auth-Token: {{authToken}}
-Content-Range: 0-890/890
+Content-Range: 0-997/997
 
 < mod_policy.json
 
@@ -124,6 +125,8 @@ X-F5-Auth-Token: {{authToken}}
         }
 }
 
+###
+@policy_import_id = {{create_mod_policy.response.body.$.id}}
 ###
 
 ###

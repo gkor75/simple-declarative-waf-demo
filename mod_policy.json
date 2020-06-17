@@ -1,0 +1,47 @@
+{
+  "policy": {
+    "name": "AppPolicy01",
+    "description": "ISC ENABLEMENT FOR DECLARATIVE AND WEBHOOKS",
+    "template": {
+      "name": "POLICY_TEMPLATE_RAPID_DEPLOYMENT"
+    },
+    "enforcementMode": "blocking",
+    "server-technologies": [
+      {
+        "serverTechnologyName": "MySQL"
+      },
+      {
+        "serverTechnologyName": "Unix/Linux"
+      }
+    ],
+    "blocking-settings": {
+      "violations": [
+        {
+          "name": "VIOL_FILETYPE",
+          "alarm": true,
+          "block": true,
+          "learn": true
+        }
+      ]
+    },
+    "signature-settings": {
+      "signatureStaging": false
+    },
+    "policy-builder": {
+      "learnOnlyFromNonBotTraffic": false
+    }
+  },
+  "modifications": [
+    {
+      "entityChanges": {
+        "type": "explicit"
+      },
+      "entity": {
+        "name": "dat"
+      },
+      "entityKind": "tm:asm:policies:filetypes:filetypestate",
+      "action": "delete",
+      "description": "Delete Disallowed File Type"
+    }
+  ]
+}
