@@ -63,7 +63,6 @@ X-F5-Auth-Token: {{authToken}}
 
 ###
 # Apply policy
-# @name apply_policy
 POST https://{{mgmt_address}}/mgmt/tm/asm/tasks/apply-policy/ HTTP/1.1 
 X-F5-Auth-Token: {{authToken}}
 
@@ -126,6 +125,16 @@ X-F5-Auth-Token: {{authToken}}
 }
 
 ###
+# Apply policy
+POST https://{{mgmt_address}}/mgmt/tm/asm/tasks/apply-policy/ HTTP/1.1 
+X-F5-Auth-Token: {{authToken}}
+
+{
+    "policy": {
+        "fullPath":"/Common/AppPolicy01"
+    }
+}
+####
 @policy_import_id = {{create_mod_policy.response.body.$.id}}
 ###
 
