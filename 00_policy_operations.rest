@@ -46,7 +46,7 @@ X-F5-Auth-Token: {{authToken}}
 }
 
 ###
-@policy_id = {{create_policy.response.body.$.id}}
+@policy_import_id = {{create_policy.response.body.$.id}}
 
 # Get Policy ID
 # @name get_poplicy
@@ -58,7 +58,7 @@ X-F5-Auth-Token: {{authToken}}
 
 ###
 # Checking if policy created correctly
-GET https://{{mgmt_address}}/mgmt/tm/asm/tasks/import-policy/{{policy_id}} HTTP/1.1
+GET https://{{mgmt_address}}/mgmt/tm/asm/tasks/import-policy/{{policy_import_id}} HTTP/1.1
 X-F5-Auth-Token: {{authToken}}
 
 ###
@@ -80,7 +80,7 @@ GET https://{{mgmt_address}}/mgmt/tm/asm/policies/{{policy_id}}/suggestions?ver=
 X-F5-Auth-Token: {{authToken}}
 
 ###
-# Get Suggestions
+# Get Suggestions ID
 # @name get_suggestions
 POST https://{{mgmt_address}}/mgmt/tm/asm/tasks/export-suggestions/ HTTP/1.1
 X-F5-Auth-Token: {{authToken}}
@@ -96,5 +96,40 @@ X-F5-Auth-Token: {{authToken}}
 @suggestions_id = {{get_suggestions.response.body.$.id}}
 
 ###
+# Export Suggestions
 GET https://{{mgmt_address}}/mgmt/tm/asm/tasks/export-suggestions/{{suggestions_id}}?ver=15.1.0 HTTP/1.1
+X-F5-Auth-Token: {{authToken}}
+
+###
+# apply new policy
+###
+# Upload Policy
+# @name upload_mod_file
+POST https://{{mgmt_address}}/mgmt/tm/asm/file-transfer/uploads/policymod.json HTTP/1.1
+X-F5-Auth-Token: {{authToken}}
+Content-Range: 0-890/890
+
+< mod_policy.json
+
+###
+# Create Policy
+# @name create_mod_policy
+POST https://{{mgmt_address}}/mgmt/tm/asm/tasks/import-policy/ HTTP/1.1
+X-F5-Auth-Token: {{authToken}}
+
+{
+    "filename":"policymod.json",
+    "policy": {
+        "fullPath": "/Common/AppPolicy01"
+        }
+}
+
+###
+
+###
+# Auxiliary requests
+# Check policy ingredients
+
+# Get policy attributes
+GET  https://{{mgmt_address}}/mgmt/tm/asm/policies/{{policy_id}}/methods HTTP/1.1
 X-F5-Auth-Token: {{authToken}}
