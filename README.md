@@ -22,7 +22,7 @@
     * SelfIPs
     * Routes
     * DNS
-    * SNMP
+    * NTP
 
 # Demo flow
 ## Create initial policy and Virtual Server
