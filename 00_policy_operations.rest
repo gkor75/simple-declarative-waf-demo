@@ -88,7 +88,7 @@ X-F5-Auth-Token: {{authToken}}
     "policyReference": {
         "link": "https://localhost/mgmt/tm/asm/policies/{{policy_id}}"},
         "inline": true,
-        "filter": "score gt '0'"
+        "filter": "score gt '0' and entityKind eq 'tm:asm:policies:filetypes:filetypestate'"
 }
 
 ###
